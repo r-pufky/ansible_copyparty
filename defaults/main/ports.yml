@@ -1,0 +1,54 @@
+---
+###############################################################################
+# Ports Configuration
+###############################################################################
+# Manage firewall with r_pufky.deb.ufw.
+#
+# Reference:
+# * https://github.com/r-pufky/ansible_ufw
+
+copyparty_srv_ports:
+  - proto: 'udp'
+    from_ip: 'any'
+    to_port: 69
+    comment: 'TFTP'
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: 80
+    comment: 'HTTP'
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: 443
+    comment: 'HTTPS'
+  - proto: 'udp'
+    from_ip: 'any'
+    to_port: 1900
+    comment: 'SSDP'
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: 3921
+    comment: 'FTP'
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: 3923
+    comment: 'HTTP/HTTPS'
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: 3945
+    comment: 'SMB'
+  - proto: 'udp'
+    from_ip: 'any'
+    to_port: 3969
+    comment: 'tftp'
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: 3990
+    comment: 'FTPS'
+  - proto: 'udp'
+    from_ip: 'any'
+    to_port: 5353
+    comment: 'mDNS'
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: '12000:12099'
+    comment: 'Passive FTP'

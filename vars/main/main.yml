@@ -1,0 +1,72 @@
+---
+###############################################################################
+# Default copyparty Package Dependencies
+###############################################################################
+# Default required packages for copyparty install.
+#
+# Updates:
+# * New MAJOR, MINOR releases should hard branch at version before starting
+#   (e.g. 2.14.x branch).
+# * Keep a separate change log as changes are made, you will not remember all
+#   of them.
+# * Use bare-metal docs to validate package/process changes.
+# * Update role defaults (includes updating defaults, tasks):
+#   * Use defaults/ to remove any changed/deprecated variables.
+# * Update tests for any changes.
+#   * Use BARE VERSION for find and replace to set new version.
+#     * Both: 3.5.x and 3.6x branches.
+# * Standard role validation testing (yamllint, ansible-lint, to-do, no-qa).
+# * Tag with OS-APP-ROLE version.
+#
+# Reference:
+# * https://github.com/9001/copyparty/releases
+
+# Last time copyparty options were validated against default configuration.
+copyparty_role_validate_date: '2025-11-23'
+copyparty_role_validate_release: 'trixie'
+copyparty_role_validate_version: 'v1.19.20'
+
+###############################################################################
+# APT Packages
+###############################################################################
+
+copyparty_role_packages:
+  - 'python3-pil'
+  - 'ffmpeg'
+  - 'libvips42t64'  # Higher quality thumbnails than pillow.
+  - 'python3-mutagen'  # Pure python music tags.
+
+###############################################################################
+# copyparty GitHub Options
+###############################################################################
+# Reference:
+# * https://github.com/copyparty/copyparty/releases/latest
+
+copyparty_role_repo_release_owner: '9001'
+copyparty_role_repo_release_repo: 'copyparty'
+copyparty_role_repo_extract_dir: '/opt/copyparty'
+copyparty_role_repo_extract_symlink: '/opt/copyparty/copyparty'
+copyparty_role_repo_release_specifier: 'v'
+copyparty_role_repo_release_asset: 'copyparty-sfx.py'
+
+###############################################################################
+# Default User/Group
+###############################################################################
+
+copyparty_role_group:
+  name: 'copyparty'
+  gid: 696
+
+copyparty_role_user:
+  name: 'copyparty'
+  group: 'copyparty'
+  uid: 696
+  shell: '/usr/sbin/nologin'
+  home: '/var/lib/copyparty'
+  comment: 'copyparty daemon,,,'
+  create_home: false
+  password: '!'
+  password_lock: true
+  update_password: 'always'
+  expires: -1
+  system: true

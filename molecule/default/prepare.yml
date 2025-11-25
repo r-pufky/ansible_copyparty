@@ -1,0 +1,34 @@
+---
+- name: 'Prepare'
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: 'Prepare | create cache'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'create_cache.yml'
+      vars:
+        test_name: 'Prepare | create cache'
+
+    - name: 'Prepare | create versioned directory'
+      ansible.builtin.file:
+        path: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/v1.19.20"
+          }}'
+        mode: '0755'
+        state: 'directory'
+
+    - name: 'Prepare | check cache'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'cache_url.yml'
+      vars:
+        test_name: 'Prepare | cache v1.19.20'
+        test_dest: 'v1.19.20/copyparty-sfx.py'
+        test_url: '{{
+            "https://github.com/9001/copyparty/releases/download/" ~
+            "v1.19.20/copyparty-sfx.py"
+          }}'
+        test_mode: '0640'

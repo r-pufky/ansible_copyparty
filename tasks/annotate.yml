@@ -1,0 +1,83 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Annotate User Configuration.
+###############################################################################
+# Use r_pufky.data.v3 data annotations to enforce consistency and validation
+# checks.
+#
+# Reference:
+# * https://docs.ansible.com/ansible/latest/dev_guide/developing_program_flow_modules.html#argument-spec
+# * https://github.com/ansible/ansible/issues/77159
+# yamllint enable rule:line-length
+
+- name: 'Annotate | sanitize & annotate service defaults'
+  ansible.builtin.set_fact:  # noqa jinja[spacing] readability.
+    _copyparty_srv_version: "{{ {} | r_pufky.data.v3(
+        raw=copyparty_srv_version,
+        default=copyparty_role_validate_version,
+        _bare=copyparty_srv_version.split('v')[-1],
+        hint='str',
+        order=1
+        )
+      }}"
+    _copyparty_srv_env: "{{ {} | r_pufky.data.v3(
+        raw=copyparty_srv_env,
+        default=[
+          {'var': 'PYTHONUNBUFFERED', 'value': 'x'},
+          {'var': 'XDG_CONFIG_HOME', 'value': '/var/lib/copyparty/.config'}
+        ],
+        hint='list of dict',
+        order=2
+        )
+      }}"
+    _copyparty_srv_config: "{{ {} | r_pufky.data.v3(
+        raw=copyparty_srv_config,
+        default='',
+        _dest='/etc/copyparty/copyparty.conf',
+        hint='str',
+        order=3
+        )
+      }}"
+    _copyparty_srv_delete_old_versions_enable: "{{ {} | r_pufky.data.v3(
+        raw=copyparty_srv_delete_old_versions_enable,
+        default=true,
+        hint='bool',
+        order=4
+        )
+      }}"
+    _copyparty_srv_force_overwrite: "{{ {} | r_pufky.data.v3(
+        raw=copyparty_srv_force_overwrite,
+        default=false,
+        hint='bool',
+        order=5
+        )
+      }}"
+    _copyparty_srv_force_config_only_enable: "{{ {} | r_pufky.data.v3(
+        raw=copyparty_srv_force_config_only_enable,
+        default=false,
+        hint='bool',
+        order=6
+        )
+      }}"
+    _copyparty_srv_user: "{{ {} | r_pufky.data.v3(
+        raw=copyparty_srv_user,
+        default='copyparty',
+        hint='str',
+        order=7
+        )
+      }}"
+    _copyparty_srv_group: "{{ {} | r_pufky.data.v3(
+        raw=copyparty_srv_group,
+        default='copyparty',
+        hint='str',
+        order=8
+        )
+      }}"
+    _copyparty_srv_create_user: "{{ {} | r_pufky.data.v3(
+        raw=copyparty_srv_create_user,
+        default=true,
+        hint='bool',
+        order=9
+        )
+      }}"

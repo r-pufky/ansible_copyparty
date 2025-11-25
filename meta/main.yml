@@ -1,0 +1,25 @@
+---
+galaxy_info:
+  role_name: 'copyparty'
+  author: 'r_pufky'
+  description: 'Copyparty portable file server'
+  company: 'N/A'
+  license: 'AGPL-3.0 License'
+  min_ansible_version: '2.18.0'
+
+  platforms:
+    - name: 'Debian'
+      versions:
+        - 'trixie'
+
+  galaxy_tags:
+    - 'copyparty'
+    - 'file'
+    - 'server'
+    - 'webdav'
+    - 'ftp'
+    - 'tftp'
+    - 'indexer'
+    - 'thumbnails'
+
+dependencies: []

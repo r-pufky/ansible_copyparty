@@ -1,0 +1,119 @@
+---
+###############################################################################
+# copyparty Service Configuration
+###############################################################################
+# Install size: ~11MB
+#      copyparty: ~1MB.
+#   dependencies: ~10MB.
+#
+# Set repo_host_access_token if API is rate limited. See r_pufky.deb.repo.
+
+# copyparty Release.
+#
+# Versions (Schematic):
+#       MAJOR: Safe - Usually requires no role updates.
+#       MINOR: Safe - Usually requires no role updates.
+#       PATCH: Safe - Usually requires no role updates.
+#   RECOMMEND: Always check release notes when upgrading versions - custom
+#              configuration files may break though role will likely not. Never
+#              use 'latest'.
+#
+# Values:
+#   {VERSION}: Tagged release to use ('v1.19.20').
+#      latest: Use latest stable release.
+#
+# Default: 'v1.19.20'.
+#
+# Reference:
+# * https://github.com/9001/copyparty/releases
+copyparty_srv_version: 'v1.19.20'
+
+# copyparty Environment.
+#
+# Set environment variables for copyparty service.
+#
+# copyparty_srv_env:
+#     list of dict - Environment variables to set.
+#   - var: str - Environment variable name.
+#     value: str - Environment variable value.
+#
+# Default:
+#   - var: 'PYTHONUNBUFFERED'
+#     value: 'x'
+#   - var: 'XDG_CONFIG_HOME'
+#     value: '/var/lib/copyparty/.config'
+#
+# Reference:
+# * https://github.com/9001/copyparty?tab=readme-ov-file#feature-chickenbits
+copyparty_srv_env:
+  - var: 'PYTHONUNBUFFERED'
+    value: 'x'
+  - var: 'XDG_CONFIG_HOME'
+    value: '/var/lib/copyparty/.config'
+
+# copyparty Configuration.
+#
+# Special Case:
+# * Template files may be used (without template extension).
+#
+# Sourced from ansible controller; automatically placed in
+# /etc/copyparty/copyparty.conf with correct permissions.
+#
+# copyparty_cfg_tls_cert: 'host_vars/cpp.example.com/copyparty.conf'
+#
+# Default: '' (disabled).
+copyparty_srv_cfg: ''
+
+# Remove old installs on upgrade success? Default: True.
+copyparty_srv_delete_old_versions_enable: true
+
+# Force overwrite existing install?
+#
+# DATA DESTRUCTIVE.
+#
+# Removes existing cached downloaded archives and existing same-version install
+# directories (if any). Any user data in these directories are DESTROYED.
+#
+# Default: False.
+copyparty_srv_force_overwrite: false
+
+# Only apply configuration?
+#
+# Reduces role application time by ONLY applying configuration changes.
+#
+# This should ONLY be used after the role has been fully run once.
+#
+# Useful when adding a change without reconfiguring the whole system or
+# checking and installing a new version. Suggest applying with extra options:
+#
+#   ansible-playbook site.yml
+#       --tags copyparty
+#       -e '{"copyparty_srv_force_config_only_enable": true}'
+#
+# Default: False.
+copyparty_srv_force_config_only_enable: false
+
+###############################################################################
+# copyparty User
+###############################################################################
+
+# User that copyparty will run under.
+#
+# Enable copyparty_srv_create_user if this account is not externally managed.
+#
+# Default: 'copyparty'.
+copyparty_srv_user: 'copyparty'
+
+# Group that copyparty will run under.
+#
+# Enable copyparty_srv_create_user if this group is not externally managed.
+#
+# Default: 'copyparty'.
+copyparty_srv_group: 'copyparty'
+
+# Create copyparty_srv_user, copyparty_srv_group if not detected?
+#
+# Applied via r_pufky.deb.users, see vars/main.yml for default user attributes.
+#
+# Default: True.
+copyparty_srv_create_user: true

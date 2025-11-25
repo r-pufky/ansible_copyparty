@@ -1,0 +1,10 @@
+---
+- name: 'Verify'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Verify | query dashboard'
+      ansible.builtin.uri:
+        url: 'http://localhost:3923'
+        method: 'GET'
+        status_code: 200

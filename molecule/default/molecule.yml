@@ -1,0 +1,65 @@
+---
+###############################################################################
+# Default
+###############################################################################
+# Default configuration is deployed successfully.
+#
+# TODO - update this.
+# Tests:
+# * copyparty running static configurations.
+# * copyparty started/restarted correctly.
+# * Dashboard is accessible at http://localhost:3293
+
+dependency:
+  name: 'galaxy'
+driver:
+  name: 'podman'
+provisioner:
+  name: 'ansible'
+  config_options:
+    defaults:
+      interpreter_python: 'auto_silent'
+      callback_whitelist: 'profile_tasks, timer, yaml'
+    ssh_connection:
+      pipelining: false
+  inventory:
+    group_vars:
+      all:
+        repo_testing_enable: true
+        test_host: 'variable_replace_test'
+        repo_testing_versions:
+          - comment: 'default'
+            version: 'v1.19.20'
+            asset: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/v1.19.20/copyparty-sfx.py"
+              }}'
+    host_vars:
+      copyparty-debian-13-default:
+        copyparty_srv_config: '{{
+            lookup("env", "MOLECULE_SCENARIO_DIRECTORY") ~
+            "/files/copyparty.conf"
+          }}'
+platforms:
+  - name: 'copyparty-debian-13-default'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
+    systemd: 'always'
+    capabilities:
+      - 'SYS_ADMIN'  # Required for rootless <1024 port binding.
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+    published_ports:
+      - '3923:3923/tcp'
+verifier:
+  name: 'ansible'
+scenario:
+  test_sequence:
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    - 'prepare'
+    - 'converge'
+    - 'verify'
+    - 'destroy'

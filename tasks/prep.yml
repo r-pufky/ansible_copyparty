@@ -1,0 +1,33 @@
+---
+###############################################################################
+# Prep
+###############################################################################
+# Create user and determine UID/GID for potential remote filesystems.
+
+- name: 'Prep | manage users'
+  when: _copyparty_srv_create_user.raw
+  ansible.builtin.include_role:
+    name: 'r_pufky.deb.users'
+    tasks_from: 'role_account_add.yml'
+  vars:
+    users_role_user: '{{ copyparty_role_user }}'
+    users_role_group: '{{ copyparty_role_group }}'
+
+- name: 'Prep | enumerate system user {{ _copyparty_srv_user.raw }}'
+  ansible.builtin.user:
+    name: '{{ _copyparty_srv_user.raw }}'
+    state: 'present'
+  check_mode: true
+  changed_when: false
+  register: _copyparty_srv_user_query
+
+- name: 'Prep | parse system user UID/GID'
+  ansible.builtin.set_fact:
+    _copyparty_srv_user: '{{
+        _copyparty_srv_user |
+        combine({"_uid": _copyparty_srv_user_query.uid})
+      }}'
+    _copyparty_srv_group: '{{
+        _copyparty_srv_group |
+        combine({"_gid": _copyparty_srv_user_query.group})
+      }}'

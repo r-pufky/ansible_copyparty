@@ -1,0 +1,31 @@
+---
+###############################################################################
+# Install Packages & Services
+###############################################################################
+# copyparty is a static python file. Just extract and set proper permissions.
+
+- name: 'Install | packages'
+  ansible.builtin.include_role:
+    name: 'r_pufky.deb.apt'
+  vars:
+    apt_packages:
+      - '{{ copyparty_role_packages }}'
+    apt_package_update_cache: true
+
+- name: 'Install | copyparty {{ _copyparty_srv_version.raw }}'
+  when: not _copyparty_srv_force_config_only_enable.raw
+  ansible.builtin.include_role:
+    name: 'r_pufky.deb.repo'
+  vars:
+    repo_release_owner: '{{ copyparty_role_repo_release_owner }}'
+    repo_release_repo: '{{ copyparty_role_repo_release_repo }}'
+    repo_release_tag: '{{ _copyparty_srv_version.raw }}'
+    repo_release_specifier: '{{ copyparty_role_repo_release_specifier }}'
+    repo_release_asset: '{{ copyparty_role_repo_release_asset }}'
+    repo_file_owner: '{{ _copyparty_srv_user.raw }}'
+    repo_file_group: '{{ _copyparty_srv_group.raw }}'
+    repo_extract_dir: '{{ copyparty_role_repo_extract_dir }}'
+    repo_extract_symlink: '{{ copyparty_role_repo_extract_symlink }}'
+    repo_extract_delete_old_versions:
+      '{{ _copyparty_srv_delete_old_versions_enable.raw }}'
+    repo_force_overwrite: '{{ _copyparty_srv_force_overwrite.raw }}'
