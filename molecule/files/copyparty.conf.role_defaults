@@ -1,0 +1,17 @@
+# Minimal configuration for Copyparty.
+#
+# https://github.com/9001/copyparty/blob/hovudstraum/docs/example.conf
+
+[global]
+  i: 0.0.0.0
+
+[accounts]
+  user: user
+
+[/]
+  /d
+  accs:
+    r: *
+    rwdma: user
+  flags:
+    grid

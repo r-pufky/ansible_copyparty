@@ -3,6 +3,23 @@
   hosts: 'all'
   gather_facts: false
   tasks:
+    - name: 'Verify | /etc/opt/copyparty/copyparty.conf'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Verify | /etc/opt/copyparty/copyparty.conf'
+        test_src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/files/copyparty.conf"
+          }}'
+        test_file: '/etc/opt/copyparty/copyparty.conf'
+        test_owner: 'copyparty'
+        test_group: 'copyparty'
+        test_mode: '0640'
+        test_state: 'file'
+        test_diff: true
+
     - name: 'Verify | query dashboard'
       ansible.builtin.uri:
         url: 'http://localhost:3923'

@@ -1,0 +1,17 @@
+---
+###############################################################################
+# Maintenance
+###############################################################################
+# Prune any old files from previous role versions. This is executed before any
+# operations with the new role version.
+#
+# Use shell command to increase execution speed for multiple directories.
+
+# 2.0.0 changed role structure:
+# * /opt/copyparty/copyparty ➔ /opt/copyparty/srv/{VERSION}.
+- name: 'Maintenance | 3.0.0 | remove old versions'
+  ansible.builtin.shell: >-
+    rm -f /opt/copyparty/copyparty*
+  args:
+    executable: '/bin/bash'
+    removes: '/opt/copyparty/copyparty'

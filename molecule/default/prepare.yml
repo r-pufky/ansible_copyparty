@@ -4,6 +4,12 @@
   connection: local
   gather_facts: false
   tasks:
+    - name: 'Prepare | import role variables'
+      ansible.builtin.include_vars:
+        file: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
+          }}'
+
     - name: 'Prepare | create cache'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
@@ -11,24 +17,36 @@
       vars:
         test_name: 'Prepare | create cache'
 
-    - name: 'Prepare | create versioned directory'
-      ansible.builtin.file:
-        path: '{{
-            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
-            "/molecule/cache/v1.19.20"
-          }}'
-        mode: '0755'
-        state: 'directory'
-
-    - name: 'Prepare | check cache'
+    - name: '{{  "Prepare | cache copyparty " ~ copyparty___app._version }}'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
-        test_name: 'Prepare | cache v1.19.20'
-        test_dest: 'v1.19.20/copyparty-sfx.py'
-        test_url: '{{
-            "https://github.com/9001/copyparty/releases/download/" ~
-            "v1.19.20/copyparty-sfx.py"
-          }}'
+        test_name:
+          '{{  "Prepare | cache copyparty " ~ copyparty___app._version }}'
+        test_dest:
+          '{{ copyparty___app._version ~ "_" ~ copyparty___app._package }}'
+        test_url: '{{ copyparty___app._url }}'
         test_mode: '0640'
+
+- name: 'Prepare'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Prepare | import role variables'
+      ansible.builtin.include_vars:
+        file: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
+          }}'
+
+    - name: 'Prepare | inject cached packages'
+      when: (url_inject_enable | default(false))
+      ansible.builtin.copy:
+        src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/molecule/cache/" ~
+            copyparty___app._version ~ "_" ~ copyparty___app._package
+          }}'
+        dest: '{{ "/tmp/" ~ copyparty___app._package }}'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'

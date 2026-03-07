@@ -6,3 +6,33 @@
     - name: 'Converge | apply r_pufky.media.copyparty'
       ansible.builtin.include_role:
         name: 'r_pufky.media.copyparty'
+
+    - name: 'Converge | verify | minimal /etc/opt/copyparty/copyparty.conf'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Verify | minimal /etc/opt/copyparty/copyparty.conf'
+        test_src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/files/copyparty.conf.role_defaults"
+          }}'
+        test_file: '/etc/opt/copyparty/copyparty.conf'
+        test_owner: 'copyparty'
+        test_group: 'copyparty'
+        test_mode: '0640'
+        test_diff: true
+
+    # Re-run with user test copyparty.conf.
+    - name: 'Converge | apply r_pufky.media.copyparty'
+      ansible.builtin.include_role:
+        name: 'r_pufky.media.copyparty'
+      vars:
+        copyparty_cfg_file: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/files/copyparty.conf"
+          }}'
+        copyparty_flg_maintenance: false
+        copyparty_flg_install: false
+        copyparty_flg_config: true
+        copyparty_flg_start: true

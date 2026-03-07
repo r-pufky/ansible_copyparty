@@ -2,32 +2,83 @@
 ###############################################################################
 # Prep
 ###############################################################################
-# Create user and determine UID/GID for potential remote filesystems.
+# Stop services if existing. UID/GID required for multiple tags. Parse _cfg_
+# defaults to generate runtime data and store in data annotations.
 
-- name: 'Prep | manage users'
-  when: _copyparty_srv_create_user.raw
-  ansible.builtin.include_role:
-    name: 'r_pufky.deb.users'
-    tasks_from: 'role_account_add.yml'
-  vars:
-    users_role_user: '{{ copyparty_role_user }}'
-    users_role_group: '{{ copyparty_role_group }}'
+- name: 'Prep | fact | record start time'
+  ansible.builtin.set_fact:
+    copyparty__srv: "{{ {} | r_pufky.data.v3(
 
-- name: 'Prep | enumerate system user {{ _copyparty_srv_user.raw }}'
-  ansible.builtin.user:
-    name: '{{ _copyparty_srv_user.raw }}'
+        _version=copyparty_srv_version,
+        _token=copyparty_srv_token,
+        _env=copyparty_srv_env,
+        _user=copyparty_srv_user,
+        _group=copyparty_srv_group,
+      ) }}"
+    copyparty__cfg: "{{ {} | r_pufky.data.v3(
+
+        _start=now(utc=True, fmt='%Y-%m-%dT%H%M%S'),
+        _file=copyparty_cfg_file,
+        _live_dir=copyparty___app._src_dir ~ '/' ~ copyparty_srv_version,
+        _package=copyparty___app._package,
+        _url=(
+          copyparty___repo_url ~ '/' ~ copyparty_srv_version ~ '/' ~
+          copyparty___package
+        ),
+      ) }}"
+
+- name: 'Prep | systemd | stop services'
+  ansible.builtin.systemd:
+    name: 'copyparty.service'
+    state: 'stopped'
+  failed_when: false
+
+- name: '{{ "Prep | account | query user " ~ copyparty__srv._user }}'
+  ansible.builtin.command: '{{ "id " ~ copyparty__srv._user }}'
+  failed_when: false
+  register: copyparty__cfg_check
+  changed_when: copyparty__cfg_check.rc > 0
+
+- name: '{{ "Prep | account | query group " ~ copyparty__srv._group }}'
+  ansible.builtin.command: '{{ "groups " ~ copyparty__srv._group }}'
+  failed_when: false
+  register: copyparty__group_check
+  changed_when: copyparty__group_check.rc > 0
+
+- name: '{{ "Prep | account | create group " ~ copyparty__srv._group }}'
+  when: copyparty__group_check.rc != 0
+  ansible.builtin.group:
+    gid: '{{ copyparty___group.gid }}'
+    name: '{{ copyparty___group.name }}'
     state: 'present'
+
+- name: '{{ "Prep | account | create user " ~ copyparty__srv._user }}'
+  when: copyparty__cfg_check.rc != 0
+  ansible.builtin.user:
+    name: '{{ copyparty___user.name }}'
+    group: '{{ copyparty___user.group }}'
+    uid: '{{ copyparty___user.uid }}'
+    shell: '{{ copyparty___user.shell }}'
+    home: '{{ copyparty___user.home }}'
+    create_home: '{{ copyparty___user.create_home }}'
+    password: '{{ copyparty___user.password }}'
+    password_lock: '{{ copyparty___user.password_lock }}'
+    update_password: '{{ copyparty___user.update_password }}'
+    expires: '{{ copyparty___user.expires }}'
+    system: '{{ copyparty___user.system }}'
+
+# Pre-existing users may have a different UID/GID/Home.
+- name: '{{ "Prep | account | enumerate " ~ copyparty__srv._user }}'
+  ansible.builtin.user:
+    name: '{{ copyparty__srv._user }}'
   check_mode: true
   changed_when: false
-  register: _copyparty_srv_user_query
+  register: copyparty__cfg_query
 
-- name: 'Prep | parse system user UID/GID'
+- name: 'Prep | fact | parse service UID/GID'
   ansible.builtin.set_fact:
-    _copyparty_srv_user: '{{
-        _copyparty_srv_user |
-        combine({"_uid": _copyparty_srv_user_query.uid})
-      }}'
-    _copyparty_srv_group: '{{
-        _copyparty_srv_group |
-        combine({"_gid": _copyparty_srv_user_query.group})
-      }}'
+    copyparty__cfg: "{{ copyparty__cfg | r_pufky.data.v3(
+
+        _uid=copyparty__cfg_query.uid,
+        _gid=copyparty__cfg_query.group,
+      ) }}"

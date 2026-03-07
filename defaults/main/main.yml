@@ -1,36 +1,81 @@
 ---
 ###############################################################################
-# copyparty Service Configuration
+# Feature Flags
 ###############################################################################
-# Install size: ~11MB
-#      copyparty: ~1MB.
-#   dependencies: ~10MB.
-#
-# Set repo_host_access_token if API is rate limited. See r_pufky.deb.repo.
 
-# copyparty Release.
+# 1. Run maintenance tasks?
 #
-# Versions (Schematic):
-#       MAJOR: Safe - Usually requires no role updates.
-#       MINOR: Safe - Usually requires no role updates.
-#       PATCH: Safe - Usually requires no role updates.
-#   RECOMMEND: Always check release notes when upgrading versions - custom
-#              configuration files may break though role will likely not. Never
-#              use 'latest'.
+# Preform role maintenance tasks including removal of old role versions. Does
+# not affect running services.
 #
-# Values:
-#   {VERSION}: Tagged release to use ('v1.19.20').
-#      latest: Use latest stable release.
+# Default: True.
+copyparty_flg_maintenance: true
+
+# 2. Install application?
 #
-# Default: 'v1.19.20'.
+# Creates required default directories, users, install packages, download
+# software, update services, and set minimal copyparty.conf if not specified.
+# Services stopped.
+#
+# Default: True.
+copyparty_flg_install: true
+
+# 3. Set copyparty.conf?
+#
+# File set using copyparty_cfg_file. Stops service and deploys user
+# configuration, updates services. Services stopped.
+#
+# Default: False.
+copyparty_flg_config: false
+
+# 4. Verify service running?
+#
+# Start services after role application and verify running or fail.
+#
+# Default: True.
+copyparty_flg_start: true
+
+###############################################################################
+# Service
+###############################################################################
+
+# Copyparty release.
+#
+# Submit an issue if future versions break role deployment.
+#
+# Default: 'v1.20.10'.
 #
 # Reference:
 # * https://github.com/9001/copyparty/releases
-copyparty_srv_version: 'v1.19.20'
+copyparty_srv_version: 'v1.20.10'
 
-# copyparty Environment.
+# Github access token.
 #
-# Set environment variables for copyparty service.
+# Unauthenticated (anonymous) API requests are heavily restricted to the sum
+# total of requests to github from a given IP. Use an access token if
+# receiving 403's.
+#
+# Classic Tokens:
+# * settings > developer settings > personal access tokens (classic)
+#   * notes: {LABEL APPROPRIATELY}
+#   * expiration: {CUSTOM}
+#   * scopes: NONE
+#
+# Fine-grained Tokens:
+# * settings > developer settings > personal access tokens (fine-grained)
+#   * token name: {LABEL APPROPRIATELY}
+#   * expiration: {CUSTOM}
+#   * description: {DESCRIPTIVE TEXT}
+#   * resource owner: {YOUR ACCOUNT}
+#   * repository access: Public Repositories (read-only)
+#
+# Default: '' (unauthenticated).
+#
+# Reference:
+# * https://docs.github.com/en/authentication
+copyparty_srv_token: ''
+
+# Service environment variables.
 #
 # copyparty_srv_env:
 #     list of dict - Environment variables to set.
@@ -51,69 +96,54 @@ copyparty_srv_env:
   - var: 'XDG_CONFIG_HOME'
     value: '/var/lib/copyparty/.config'
 
-# copyparty Configuration.
-#
-# Special Case:
-# * Template files may be used (without template extension).
-#
-# Sourced from ansible controller; automatically placed in
-# /etc/copyparty/copyparty.conf with correct permissions.
-#
-# copyparty_cfg_tls_cert: 'host_vars/cpp.example.com/copyparty.conf'
-#
-# Default: '' (disabled).
-copyparty_srv_cfg: ''
-
-# Remove old installs on upgrade success? Default: True.
-copyparty_srv_delete_old_versions_enable: true
-
-# Force overwrite existing install?
-#
-# DATA DESTRUCTIVE.
-#
-# Removes existing cached downloaded archives and existing same-version install
-# directories (if any). Any user data in these directories are DESTROYED.
-#
-# Default: False.
-copyparty_srv_force_overwrite: false
-
-# Only apply configuration?
-#
-# Reduces role application time by ONLY applying configuration changes.
-#
-# This should ONLY be used after the role has been fully run once.
-#
-# Useful when adding a change without reconfiguring the whole system or
-# checking and installing a new version. Suggest applying with extra options:
-#
-#   ansible-playbook site.yml
-#       --tags copyparty
-#       -e '{"copyparty_srv_force_config_only_enable": true}'
-#
-# Default: False.
-copyparty_srv_force_config_only_enable: false
-
-###############################################################################
-# copyparty User
-###############################################################################
-
 # User that copyparty will run under.
 #
-# Enable copyparty_srv_create_user if this account is not externally managed.
+# 'copyparty' will automatically be created using vars/main.yml if required.
+# All other accounts are checked for existence.
 #
 # Default: 'copyparty'.
 copyparty_srv_user: 'copyparty'
 
 # Group that copyparty will run under.
 #
-# Enable copyparty_srv_create_user if this group is not externally managed.
+# 'copyparty' will automatically be created using vars/main.yml if required.
+# All other accounts are checked for existence.
 #
 # Default: 'copyparty'.
 copyparty_srv_group: 'copyparty'
 
-# Create copyparty_srv_user, copyparty_srv_group if not detected?
+###############################################################################
+# Config
+###############################################################################
+
+# copyparty.conf to set.
 #
-# Applied via r_pufky.deb.users, see vars/main.yml for default user attributes.
+# Ansible controller path to source copyparty.conf (treated as a jinja2
+# template allowing for ansible variable interpretation). Overwrites existing
+# /etc/opt/copyparty/copyparty.conf.
 #
-# Default: True.
-copyparty_srv_create_user: true
+# A minimally configured template that works with the role will be deployed if
+# no config file is specified (see templates/copyparty.conf.j2):
+#   [global]
+#     i: 0.0.0.0
+#   [accounts]
+#     user: user
+#   [/]
+#     /d
+#     accs:
+#       r: *
+#       rwdma: user
+#     flags:
+#       grid
+#
+# Manage additional files and directories (custom data storage locations, etc.)
+# outside of the role. Must be accessible to copyparty_srv_user account.
+#
+# copyparty_cfg_file: 'host_vars/cp.example.com/copyparty.conf'
+#
+# Default: '' (use minimally configured role template).
+#
+# Reference:
+# * https://github.com/9001/copyparty/blob/hovudstraum/docs/example.conf
+# * copyparty --help
+copyparty_cfg_file: ''

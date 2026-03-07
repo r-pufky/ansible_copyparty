@@ -4,11 +4,10 @@
 ###############################################################################
 # Default configuration is deployed successfully.
 #
-# TODO - update this.
 # Tests:
-# * copyparty running static configurations.
-# * copyparty started/restarted correctly.
-# * Dashboard is accessible at http://localhost:3293
+# * Minimal copyparty.conf set (tested in converge).
+# * User provided copyparty.conf set.
+# * Copyparty services are active and running.
 
 dependency:
   name: 'galaxy'
@@ -25,23 +24,9 @@ provisioner:
   inventory:
     group_vars:
       all:
-        repo_testing_enable: true
-        test_host: 'variable_replace_test'
-        repo_testing_versions:
-          - comment: 'default'
-            version: 'v1.19.20'
-            asset: '{{
-                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
-                "/molecule/cache/v1.19.20/copyparty-sfx.py"
-              }}'
-    host_vars:
-      copyparty-debian-13-default:
-        copyparty_srv_config: '{{
-            lookup("env", "MOLECULE_SCENARIO_DIRECTORY") ~
-            "/files/copyparty.conf"
-          }}'
+        url_inject_enable: true
 platforms:
-  - name: 'copyparty-debian-13-default'
+  - name: 'copyparty_default'
     image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     capabilities:

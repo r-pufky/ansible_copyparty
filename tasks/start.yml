@@ -1,0 +1,29 @@
+---
+###############################################################################
+# Start
+###############################################################################
+# Start copyparty services and confirm they are active and running.
+
+- name: 'Start | start services'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+    daemon_reload: true
+    state: 'restarted'
+  failed_when: false
+  loop:
+    - 'copyparty.service'
+
+- name: 'Start | query service status'
+  ansible.builtin.service_facts:
+
+- name: 'Start | assert | services running'
+  ansible.builtin.assert:
+    quiet: true
+    that: ansible_facts.services[item].state == 'running'
+    fail_msg: |
+
+      ✘ Service failed to start.
+      {{ item }}
+  loop:
+    - 'copyparty.service'

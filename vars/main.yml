@@ -5,32 +5,28 @@
 # Default required packages for copyparty install.
 #
 # Updates:
-# * New MAJOR, MINOR releases should hard branch at version before starting
-#   (e.g. 2.14.x branch).
-# * Keep a separate change log as changes are made, you will not remember all
-#   of them.
+# * Branch for new Debian releases.
+# * KEEP a separate change log as changes are made.
 # * Use bare-metal docs to validate package/process changes.
-# * Update role defaults (includes updating defaults, tasks):
-#   * Use defaults/ to remove any changed/deprecated variables.
+# * Update defaults.
 # * Update tests for any changes.
-#   * Use BARE VERSION for find and replace to set new version.
-#     * Both: 3.5.x and 3.6x branches.
-# * Standard role validation testing (yamllint, ansible-lint, to-do, no-qa).
-# * Tag with OS-APP-ROLE version.
+# * Standard validation testing (yamllint, ansible-lint, to-do, no-qa).
 #
 # Reference:
 # * https://github.com/9001/copyparty/releases
 
-# Last time copyparty options were validated against default configuration.
-copyparty_role_validate_date: '2025-11-23'
-copyparty_role_validate_release: 'trixie'
-copyparty_role_validate_version: 'v1.19.20'
+copyparty___release: "{{ {} | r_pufky.data.v3(
+
+    _date='2026-02-07',
+    _debian='trixie',
+    _app='v1.20.10',
+  ) }}"
 
 ###############################################################################
 # APT Packages
 ###############################################################################
 
-copyparty_role_packages:
+copyparty___packages:
   - 'python3-pil'
   - 'ffmpeg'
   - 'libvips42t64'  # Higher quality thumbnails than pillow.
@@ -42,22 +38,36 @@ copyparty_role_packages:
 # Reference:
 # * https://github.com/copyparty/copyparty/releases/latest
 
-copyparty_role_repo_release_owner: '9001'
-copyparty_role_repo_release_repo: 'copyparty'
-copyparty_role_repo_extract_dir: '/opt/copyparty'
-copyparty_role_repo_extract_symlink: '/opt/copyparty/copyparty'
-copyparty_role_repo_release_specifier: 'v'
-copyparty_role_repo_release_asset: 'copyparty-sfx.py'
+copyparty___repo_url:
+  'https://github.com/9001/copyparty/releases/download/'
+copyparty___package: 'copyparty-sfx.py'
+
+copyparty___app: "{{ {} | r_pufky.data.v3(
+
+    _version=copyparty___release._app,
+    _package=copyparty___package,
+    _base_url=copyparty___repo_url,
+    _etc_dir='/etc/opt/copyparty',
+    _cfg='/etc/opt/copyparty/copyparty.conf',
+    _opt_dir='/opt/copyparty',
+    _src_dir='/opt/copyparty/src',
+    _var_dir='/var/opt/copyparty',
+    _service='/etc/systemd/system/copyparty.service',
+    _url=(
+      copyparty___repo_url ~ '/' ~ copyparty___release._app ~ '/' ~
+      copyparty___package
+    ),
+  ) }}"
 
 ###############################################################################
 # Default User/Group
 ###############################################################################
 
-copyparty_role_group:
+copyparty___group:
   name: 'copyparty'
   gid: 696
 
-copyparty_role_user:
+copyparty___user:
   name: 'copyparty'
   group: 'copyparty'
   uid: 696

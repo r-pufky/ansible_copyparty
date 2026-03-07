@@ -1,29 +1,65 @@
-# copyparty
-copyparty Application Proxy Server.
+# Copyparty
+Copyparty portable file server with accelerated resumable uploads, dedup,
+WebDAV, SFTP, FTP, TFTP, zeroconf, media indexer, thumbnails++ all in one file.
 
-## Requirements
-[supported platforms](https://github.com/r-pufky/ansible_copyparty/blob/main/meta/main.yml)
-
-## Role Variables
-[defaults](https://github.com/r-pufky/ansible_copyparty/tree/main/defaults/main)
-
-### Ports
-All ports and protocols have been defined for the role.
-
-[defaults/ports.yml](https://github.com/r-pufky/ansible_copyparty/blob/main/defaults/main/ports.yml)
-
-## Dependencies
+## [Requirements](https://github.com/r-pufky/ansible_copyparty/blob/main/meta/main.yml)
 **galaxy-ng** roles cannot be used independently. Part of
 [r_pufky.media](https://github.com/r-pufky/ansible_collection_media)
 collection.
 
-## Example Playbook
-Read defaults documentation.
+Install size: ~11MB
 
-Deploy copyparty with a minimal startup configuration.
+## Role Variables
+Detailed variable use documented in defaults. See usage for role operation.
 
-host_vars/cpp.example.com/data/copyparty.conf
+* [defaults](https://github.com/r-pufky/ansible_copyparty/tree/main/defaults/main/main.yml) -
+  User configurable options.
+
+* [vars](https://github.com/r-pufky/ansible_copyparty/tree/main/vars/main.yml) -
+  Role default options (may be referenced in defaults).
+
+* [ports](https://github.com/r-pufky/ansible_copyparty/blob/main/defaults/main/ports.yml) -
+  Ports are **not** managed (defined for external use).
+
+## Usage
+
+### Feature Flags
+Tasks are gated by feature flags and executed in the following order.
+
+  Step | Flag                      | Notes
+ ------|---------------------------|-------
+  1    | copyparty_flg_maintenance | Preform role maintenance tasks.
+  2    | copyparty_flg_install     | Install required packages, users, etc.
+  3    | copyparty_flg_config      | Install user-defined config.
+  4    | copyparty_flg_start       | Start service and validate install.
+
+## Example Playbooks
+
+### New Deployments
+A minimal config will be deployed if no configuration is specified. This will
+deploy a working Copyparty install using **/d** as the default root directory,
+**/etc/opt/copyparty** for configuration, with **user**/**user** as the default
+user.
+
 ``` yaml
+- name: 'Copyparty'
+  ansible.builtin.include_role:
+    name: 'r_pufky.media.copyparty'
+```
+
+See [Existing Deployments](#existing-deployments) for reproducible deployments.
+
+### Existing Deployments
+Manage additional files and directories (data storage locations, etc.) outside
+of role if used **within** the config. Must be accessible to
+**copyparty_srv_user** account.
+
+host_vars/cp.example.com/copyparty.conf
+``` ini
+# Create a basic customized config.
+#
+# https://github.com/9001/copyparty/blob/hovudstraum/docs/example.conf
+
 [global]
   i: 0.0.0.0
 
@@ -31,7 +67,7 @@ host_vars/cpp.example.com/data/copyparty.conf
   user: {{ vault_copyparty_user_password }}
 
 [/]
-  /var/lib/copyparty-jail
+  /home/user/shared
   accs:
     r: *
     rwdma: user
@@ -40,13 +76,11 @@ host_vars/cpp.example.com/data/copyparty.conf
 ```
 
 ``` yaml
-- name: 'copyparty server'
-  hosts: 'cpp.example.com'
-  become: true
-  roles:
-     - 'r_pufky.media.copyparty'
+- name: 'New Copyparty Deployment'
+  ansible.builtin.include_role:
+    name: 'r_pufky.media.copyparty'
   vars:
-    copyparty_srv_cfg: 'host_vars/copyparty.example.com/data/copyparty.conf'
+    paperless_ngx_cfg_file: 'host_vars/cp.example.com/copyparty.conf'
 ```
 
 ## Development
@@ -57,22 +91,20 @@ Run all unit tests:
 molecule test --all
 ```
 
+Testing variables:
+ Variable          | type | Description
+-------------------|------|-------------
+ url_inject_enable | bool | Disable **get_url** to inject files locally.
+
 ### Releases
-Release format: **{OS}-{SERVICE}-{ROLE}**
+[Semantic versioning](https://semver.org/spec/v2.0.0) focused on service
+deployment with templated configuration to minimize role churn due to
+inconsistent and rapid rolling release cycle.
 
-Each type inherits the versioning system used; defaulting to schematic
-versioning.
-
-`12.0.0-2.0.3-1.0.0`
-
-* 12.0.0 - Debian 12 (bookworm).
-* 2.0.3 - Service/app version.
-* 1.0.0 - Role version.
-
-Releases are branched on Debian releases:
-
-* **[13.x.x](https://github.com/r-pufky/ansible_copyparty)**: 13 Trixie.
-* **[12.x.x](https://github.com/r-pufky/ansible_copyparty/tree/12.x)**: 12 Bookworm.
+ Release | Debian | Ansible | Paperless-NGX | Notes
+---------|--------|---------|---------------|-------
+ 2.x.x   | 13     | 2.20    | v1.20.10      | Ansible 2.20, feature flags, and semantic versioning.
+ 1.x.x   | 13     | 2.16    | v1.15.1       | Initial release.
 
 ## Issues
 Create a bug and provide as much information as possible.
