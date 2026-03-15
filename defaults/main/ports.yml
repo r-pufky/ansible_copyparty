@@ -7,7 +7,7 @@
 # Reference:
 # * https://github.com/r-pufky/ansible_ufw
 
-copyparty_srv_ports:
+copyparty_ports:
   - proto: 'udp'
     from_ip: 'any'
     to_port: 69

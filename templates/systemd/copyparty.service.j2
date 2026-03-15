@@ -3,7 +3,7 @@ Description=Copyparty file server.
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 {{ copyparty__cfg._live_dir ~ "/" ~ copyparty__cfg._package }} -c {{ copyparty___app._cfg }}
+ExecStart=/usr/bin/python3 {{ copyparty__cfg._app }} -c {{ copyparty___app._cfg }}
 Type=notify
 Restart=always
 ExecReload=/bin/kill -s USR1 $MAINPID

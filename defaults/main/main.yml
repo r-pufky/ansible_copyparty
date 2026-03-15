@@ -5,8 +5,7 @@
 
 # 1. Run maintenance tasks?
 #
-# Preform role maintenance tasks including removal of old role versions. Does
-# not affect running services.
+# Preform role maintenance tasks including removal of old role versions.
 #
 # Default: True.
 copyparty_flg_maintenance: true
@@ -14,8 +13,8 @@ copyparty_flg_maintenance: true
 # 2. Install application?
 #
 # Creates required default directories, users, install packages, download
-# software, update services, and set minimal copyparty.conf if not specified.
-# Services stopped.
+# software, set minimal copyparty.conf if not specified, update and start
+# services.
 #
 # Default: True.
 copyparty_flg_install: true
@@ -23,17 +22,10 @@ copyparty_flg_install: true
 # 3. Set copyparty.conf?
 #
 # File set using copyparty_cfg_file. Stops service and deploys user
-# configuration, updates services. Services stopped.
+# configuration, updates and start services.
 #
 # Default: False.
 copyparty_flg_config: false
-
-# 4. Verify service running?
-#
-# Start services after role application and verify running or fail.
-#
-# Default: True.
-copyparty_flg_start: true
 
 ###############################################################################
 # Service
@@ -43,11 +35,11 @@ copyparty_flg_start: true
 #
 # Submit an issue if future versions break role deployment.
 #
-# Default: 'v1.20.10'.
+# Default: 'v1.20.12'.
 #
 # Reference:
 # * https://github.com/9001/copyparty/releases
-copyparty_srv_version: 'v1.20.10'
+copyparty_srv_version: 'v1.20.12'
 
 # Github access token.
 #

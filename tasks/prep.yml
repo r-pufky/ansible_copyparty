@@ -1,14 +1,15 @@
 ---
 ###############################################################################
-# Prep
+# Pre Execution Tasks
 ###############################################################################
-# Stop services if existing. UID/GID required for multiple tags. Parse _cfg_
-# defaults to generate runtime data and store in data annotations.
+# Only use data annotations in role after merging role, defaults, runtime data.
+# Stop services if existing. Resolve system UID/GID.
 
 - name: 'Prep | fact | record start time'
   ansible.builtin.set_fact:
     copyparty__srv: "{{ {} | r_pufky.data.v3(
 
+        _start=now(utc=True, fmt='%Y-%m-%dT%H%M%S'),
         _version=copyparty_srv_version,
         _token=copyparty_srv_token,
         _env=copyparty_srv_env,
@@ -17,17 +18,20 @@
       ) }}"
     copyparty__cfg: "{{ {} | r_pufky.data.v3(
 
-        _start=now(utc=True, fmt='%Y-%m-%dT%H%M%S'),
         _file=copyparty_cfg_file,
         _live_dir=copyparty___app._src_dir ~ '/' ~ copyparty_srv_version,
         _package=copyparty___app._package,
+        _app=(
+          copyparty___app._src_dir ~ '/' ~ copyparty_srv_version ~ '/' ~
+          copyparty___app._package
+        ),
         _url=(
           copyparty___repo_url ~ '/' ~ copyparty_srv_version ~ '/' ~
           copyparty___package
         ),
       ) }}"
 
-- name: 'Prep | systemd | stop services'
+- name: 'Prep | systemd | stop copyparty.service'
   ansible.builtin.systemd:
     name: 'copyparty.service'
     state: 'stopped'

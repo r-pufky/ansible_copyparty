@@ -14,10 +14,5 @@
   when: copyparty_flg_config
   ansible.builtin.import_tasks: 'config.yml'
 
-- name: 'Services'
-  when: copyparty_flg_install or copyparty_flg_config
-  ansible.builtin.import_tasks: 'services.yml'
-
 - name: 'Start'
-  when: copyparty_flg_start
   ansible.builtin.import_tasks: 'start.yml'

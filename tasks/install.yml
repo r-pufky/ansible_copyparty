@@ -36,10 +36,10 @@
   vars:
     apt_packages:
       - '{{ copyparty___packages }}'
-    apt_package_update_cache: true
+    apt_srv_package_update_cache: true
 
 ###############################################################################
-# Paperless-NGX
+# copyparty
 ###############################################################################
 
 - name: 'Install | filesystem | find previous installations'
@@ -57,7 +57,7 @@
     state: 'absent'
   loop: '{{ copyparty__cmd.files }}'
 
-- name: 'Install | filesystem | stage copyparty'
+- name: '{{ "Install | url | 🗘 " ~ copyparty__cfg._package ~ " 🗘" }}'
   when: not (url_inject_enable | default(false))
   ansible.builtin.get_url:
     url: '{{ copyparty__cfg._url }}'
@@ -79,14 +79,14 @@
     mode: '0755'
     state: 'directory'
 
-# Use shell instead of two ansible tasks (copy, absent).
-- name: 'Install | filesystem | set script'
-  ansible.builtin.command:
-    argv:
-      - 'mv'
-      - '{{ "/tmp/" ~ copyparty__cfg._package }}'
-      - '{{ copyparty__cfg._live_dir ~ "/" ~ copyparty__cfg._package }}'
-    creates: '{{ copyparty__cfg._live_dir ~ "/" ~ copyparty__cfg._package }}'
+- name: '{{ "Install | filesystem | stage " ~ copyparty__cfg._app }}'
+  ansible.builtin.copy:
+    remote_src: true
+    src: '{{ "/tmp/" ~ copyparty__cfg._package }}'
+    dest: '{{ copyparty__cfg._app }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
 
 - name: '{{ "Install | filesystem | set minimal " ~ copyparty___app._cfg }}'
   when: copyparty__cfg._file | length == 0
@@ -96,3 +96,11 @@
     owner: '{{ copyparty__cfg._uid }}'
     group: '{{ copyparty__cfg._gid }}'
     mode: '0640'
+
+- name: '{{ "Install | systemd | create " ~ copyparty___app._service }}'
+  ansible.builtin.template:
+    src: 'systemd/copyparty.service.j2'
+    dest: '{{ copyparty___app._service }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'

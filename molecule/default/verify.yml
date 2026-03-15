@@ -3,17 +3,23 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Verify | /etc/opt/copyparty/copyparty.conf'
+    - name: 'Verify | import role variables'
+      ansible.builtin.include_vars:
+        file: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
+          }}'
+
+    - name: '{{ "Verify | test | " ~ copyparty___app._cfg }}'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'copy.yml'
       vars:
-        test_name: 'Verify | /etc/opt/copyparty/copyparty.conf'
+        test_name: '{{ "Verify | test | " ~ copyparty___app._cfg }}'
         test_src: '{{
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
             "/molecule/files/copyparty.conf"
           }}'
-        test_file: '/etc/opt/copyparty/copyparty.conf'
+        test_file: '{{ copyparty___app._cfg }}'
         test_owner: 'copyparty'
         test_group: 'copyparty'
         test_mode: '0640'
