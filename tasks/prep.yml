@@ -16,11 +16,9 @@
         _user=copyparty_srv_user,
         _group=copyparty_srv_group,
       ) }}"
-    copyparty__cfg: "{{ {} | r_pufky.data.v3(
+    copyparty__cfg: "{{ copyparty___app | r_pufky.data.v3(
 
         _file=copyparty_cfg_file,
-        _live_dir=copyparty___app._src_dir ~ '/' ~ copyparty_srv_version,
-        _package=copyparty___app._package,
         _app=(
           copyparty___app._src_dir ~ '/' ~ copyparty_srv_version ~ '/' ~
           copyparty___app._package
