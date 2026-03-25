@@ -41,7 +41,7 @@ copyparty_flg_config: false
 # * https://github.com/9001/copyparty/releases
 copyparty_srv_version: 'v1.20.12'
 
-# Github access token.
+# Github access token (copyparty).
 #
 # Unauthenticated (anonymous) API requests are heavily restricted to the sum
 # total of requests to github from a given IP. Use an access token if

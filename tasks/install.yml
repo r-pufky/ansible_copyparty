@@ -56,6 +56,8 @@
     path: '{{ item.path }}'
     state: 'absent'
   loop: '{{ copyparty__cmd.files }}'
+  loop_control:
+    label: '{{ item.path }}'
 
 - name: '{{ "Install | url | 🗘 " ~ copyparty__cfg._package ~ " 🗘" }}'
   when: not (url_inject_enable | default(false))
