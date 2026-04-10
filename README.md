@@ -85,9 +85,9 @@ molecule test --all
 
 Testing variables:
 
-  Variable          | type | Description
- -------------------|------|-------------
-  url_inject_enable | bool | Disable **get_url** to inject files locally.
+  Variable            | Type | Description
+ ---------------------|------|-------------
+  molecule_flg_inject | bool | Disable **get_url** to inject files locally.
 
 ### [Releases][b]
 Focused on service deployment with templated configuration to minimize role
@@ -95,7 +95,7 @@ churn due to inconsistent and rapid rolling release cycle.
 
  Release | Debian | Ansible | copyparty | Notes
 ---------|--------|---------|-----------|-------
- 3.x.x   | 13     | 2.20    | v1.20.12  | Update to Ansible 2.20 collection dependencies.
+ 3.x.x   | 13     | 2.20    | v1.20.13  | Update to Ansible 2.20 collection dependencies.
  2.x.x   | 13     | 2.20    | v1.20.10  | Ansible 2.20, feature flags, and semantic versioning.
  1.x.x   | 13     | 2.16    | v1.15.1   | Initial release.
 

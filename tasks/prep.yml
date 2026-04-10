@@ -7,7 +7,7 @@
 
 - name: 'Prep | fact | record start time'
   ansible.builtin.set_fact:
-    copyparty__srv: "{{ {} | r_pufky.data.v3(
+    copyparty__srv: "{{ copyparty___release | r_pufky.data.v3(
 
         _start=now(utc=True, fmt='%Y-%m-%dT%H%M%S'),
         _version=copyparty_srv_version,
@@ -16,11 +16,11 @@
         _user=copyparty_srv_user,
         _group=copyparty_srv_group,
       ) }}"
-    copyparty__cfg: "{{ copyparty___app | r_pufky.data.v3(
+    copyparty__cfg: "{{ {} | r_pufky.data.v3(
 
         _file=copyparty_cfg_file,
-        _app=(
-          copyparty___app._src_dir ~ '/' ~ copyparty_srv_version ~ '/' ~
+        _bin=(
+          copyparty___app._src_d ~ '/' ~ copyparty_srv_version ~ '/' ~
           copyparty___app._package
         ),
         _url=(

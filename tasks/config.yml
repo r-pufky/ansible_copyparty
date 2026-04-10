@@ -3,10 +3,10 @@
 # Configure Services
 ###############################################################################
 
-- name: '{{ "Config | filesystem | set " ~ copyparty__cfg._cfg }}'
+- name: '{{ "Config | filesystem | set " ~ copyparty___app._cfg }}'
   ansible.builtin.template:
     src: '{{ copyparty__cfg._file }}'
-    dest: '{{ copyparty__cfg._cfg }}'
+    dest: '{{ copyparty___app._cfg }}'
     owner: '{{ copyparty__cfg._uid }}'
     group: '{{ copyparty__cfg._gid }}'
     mode: '0640'

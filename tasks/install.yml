@@ -13,7 +13,7 @@
 
 - name: 'Install | filesystem | set system directories'
   ansible.builtin.file:
-    path: '{{ copyparty__cfg._src_dir }}'  # src_dir includes opt_dir.
+    path: '{{ copyparty___app._src_d }}'  # src_dir includes opt_dir.
     owner: 'root'
     group: 'root'
     mode: '0755'
@@ -27,8 +27,8 @@
     mode: '0750'
     state: 'directory'
   loop:
-    - '{{ copyparty__cfg._etc_dir }}'
-    - '{{ copyparty__cfg._var_dir }}'
+    - '{{ copyparty___app._etc_d }}'
+    - '{{ copyparty___app._var_d }}'
 
 - name: 'Install | packages'
   ansible.builtin.include_role:
@@ -44,7 +44,7 @@
 
 - name: 'Install | filesystem | find previous installations'
   ansible.builtin.find:
-    paths: '{{ copyparty__cfg._src_dir }}'
+    paths: '{{ copyparty___app._src_d }}'
     file_type: 'directory'
     recurse: false
     excludes:
@@ -59,11 +59,11 @@
   loop_control:
     label: '{{ item.path }}'
 
-- name: '{{ "Install | url | 🗘 " ~ copyparty__cfg._package ~ " 🗘" }}'
-  when: not (url_inject_enable | default(false))
+- name: '{{ "Install | url | 🗘 " ~ copyparty___app._package ~ " 🗘" }}'
+  when: not (molecule_flg_inject | default(false))
   ansible.builtin.get_url:
     url: '{{ copyparty__cfg._url }}'
-    dest: '{{ "/tmp/" ~ copyparty__cfg._package }}'
+    dest: '{{ "/tmp/" ~ copyparty___app._package }}'
     force: false
     owner: 'root'
     group: 'root'
@@ -73,36 +73,36 @@
   register: copyparty__cmd
   until: copyparty__cmd is succeeded
 
-- name: '{{ "Install | filesystem | set " ~ copyparty__cfg._app | dirname }}'
+- name: '{{ "Install | filesystem | set " ~ copyparty__cfg._bin | dirname }}'
   ansible.builtin.file:
-    path: '{{ copyparty__cfg._app | dirname }}'
+    path: '{{ copyparty__cfg._bin | dirname }}'
     owner: 'root'
     group: 'root'
     mode: '0755'
     state: 'directory'
 
-- name: '{{ "Install | filesystem | stage " ~ copyparty__cfg._app }}'
+- name: '{{ "Install | filesystem | stage " ~ copyparty__cfg._bin }}'
   ansible.builtin.copy:
     remote_src: true
-    src: '{{ "/tmp/" ~ copyparty__cfg._package }}'
-    dest: '{{ copyparty__cfg._app }}'
+    src: '{{ "/tmp/" ~ copyparty___app._package }}'
+    dest: '{{ copyparty__cfg._bin }}'
     owner: 'root'
     group: 'root'
     mode: '0644'
 
-- name: '{{ "Install | filesystem | set minimal " ~ copyparty__cfg._cfg }}'
+- name: '{{ "Install | filesystem | set minimal " ~ copyparty___app._cfg }}'
   when: copyparty__cfg._file | length == 0
   ansible.builtin.template:
     src: 'copyparty.conf.j2'
-    dest: '{{ copyparty__cfg._cfg }}'
+    dest: '{{ copyparty___app._cfg }}'
     owner: '{{ copyparty__cfg._uid }}'
     group: '{{ copyparty__cfg._gid }}'
     mode: '0640'
 
-- name: '{{ "Install | systemd | create " ~ copyparty__cfg._service }}'
+- name: '{{ "Install | systemd | create " ~ copyparty___app._service }}'
   ansible.builtin.template:
     src: 'systemd/copyparty.service.j2'
-    dest: '{{ copyparty__cfg._service }}'
+    dest: '{{ copyparty___app._service }}'
     owner: 'root'
     group: 'root'
     mode: '0644'

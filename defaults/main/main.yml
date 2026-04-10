@@ -35,11 +35,11 @@ copyparty_flg_config: false
 #
 # Submit an issue if future versions break role deployment.
 #
-# Default: 'v1.20.12'.
+# Default: 'v1.20.13'.
 #
 # Reference:
 # * https://github.com/9001/copyparty/releases
-copyparty_srv_version: 'v1.20.12'
+copyparty_srv_version: 'v1.20.13'
 
 # Github access token (copyparty).
 #
