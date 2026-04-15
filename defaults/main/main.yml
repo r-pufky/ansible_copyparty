@@ -111,7 +111,7 @@ copyparty_srv_group: 'copyparty'
 # copyparty.conf to set.
 #
 # Ansible controller path to source copyparty.conf (treated as a jinja2
-# template allowing for ansible variable interpretation). Overwrites existing
+# template allowing for ansible variable use). Overwrites existing
 # /etc/opt/copyparty/copyparty.conf.
 #
 # A minimally configured template that works with the role will be deployed if
